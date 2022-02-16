@@ -1,14 +1,22 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-struct hlist_node { struct hlist_node *next, **pprev; };
-struct hlist_head { struct hlist_node *first; };
-typedef struct { int bits; struct hlist_head *ht; } map_t;
+struct hlist_node {
+    struct hlist_node *next, **pprev;
+};
+struct hlist_head {
+    struct hlist_node *first;
+};
+typedef struct {
+    int bits;
+    struct hlist_head *ht;
+} map_t;
 
 #define MAP_HASH_SIZE(bits) (1 << bits)
 
-map_t *map_init(int bits) {
-    map_t *map = malloc(sizeof(map_t));
+map_t *map_init(int bits)
+{
+    map_t *map = calloc(1, sizeof(map_t));
     if (!map)
         return NULL;
 
@@ -37,12 +45,14 @@ struct hash_key {
     })
 
 #define GOLDEN_RATIO_32 0x61C88647
-static inline unsigned int hash(unsigned int val, unsigned int bits) {
+static inline unsigned int hash(unsigned int val, unsigned int bits)
+{
     /* High bits are more random, so use them. */
     return (val * GOLDEN_RATIO_32) >> (32 - bits);
 }
 
-static struct hash_key *find_key(map_t *map, int key) {
+static struct hash_key *find_key(map_t *map, int key)
+{
     struct hlist_head *head = &(map->ht)[hash(key, map->bits)];
     for (struct hlist_node *p = head->first; p; p = p->next) {
         struct hash_key *kn = container_of(p, struct hash_key, node);
@@ -69,11 +79,24 @@ void map_add(map_t *map, int key, void *data)
 
     struct hlist_head *h = &map->ht[hash(key, map->bits)];
     struct hlist_node *n = &kn->node, *first = h->first;
-    AAA;
+    // AAA;
+    /*
+    (a) // no operation
+    (b) n->pprev = first
+    (c) n->next = first
+    (d) n->pprev = n
+    */
     if (first)
         first->pprev = &n->next;
     h->first = n;
-    BBB
+    n->pprev = &h->first;  // BBB
+                           /*
+                           (a) n->pprev = &h->first
+                           (b) n->next = h
+                           (c) n->next = n
+                           (d) n->next = h->first
+                           (e) n->next = &h->first
+                           */
 }
 
 void map_deinit(map_t *map)
