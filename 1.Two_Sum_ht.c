@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 struct hlist_node {
@@ -152,4 +153,57 @@ int *twoSum(int *nums, int numsSize, int target, int *returnSize)
 bail:
     map_deinit(map);
     return ret;
+}
+
+
+
+static void __test1()
+{
+    int a[] = {2, 7, 11, 15};
+    int target = 0;
+    int returnSize = 0;
+    int *ret = NULL;
+    target = 9;
+    ret = twoSum(a, 4, target, &returnSize);
+    printf("[");
+    for (int i = 0; i < returnSize; i++)
+        printf("%d ", ret[i]);
+    printf("]");
+}
+
+static void __test2()
+{
+    int a[] = {3, 2, 4};
+    int target = 0;
+    int returnSize = 0;
+    int *ret = NULL;
+    target = 6;
+    ret = twoSum(a, 3, target, &returnSize);
+    printf("[");
+    for (int i = 0; i < returnSize; i++)
+        printf("%d ", ret[i]);
+    printf("]");
+}
+
+static void __test3()
+{
+    int a[] = {3, 3};
+    int target = 0;
+    int returnSize = 0;
+    int *ret = NULL;
+    target = 6;
+    ret = twoSum(a, 2, target, &returnSize);
+    printf("[");
+    for (int i = 0; i < returnSize; i++)
+        printf("%d ", ret[i]);
+    printf("]");
+}
+
+
+int main()
+{
+    __test1();
+    __test2();
+    __test3();
+    return 0;
 }
